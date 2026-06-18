@@ -57,10 +57,11 @@ async def get_current_user(token: Annotated[str, Depends(oauth2)]):
         payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
         username = payload.get("sub")
         user_id = payload.get("id")
+        role = payload.get("role")
         if username is None and user_id is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail="Could not validate user")
-        return {"id": user_id, "username": username}
+        return {"id": user_id, "username": username, "role": role}
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Could not validate user")
@@ -73,10 +74,11 @@ def authenticate_user(name: str, password: str, db: db_dependency):
         return False
     return user
 
-def create_access_token(username: str, user_id: int, time: timedelta):
+def create_access_token(username: str, user_id: int, role: str, time: timedelta):
     payload = {
         "sub": username,
         "id": user_id,
+        "role": role,
         "exp": datetime.now(timezone.utc) + time
     }
     return jwt.encode(payload, SECRET_KEY, ALGORITHM)
@@ -92,6 +94,6 @@ async def login_for_access_token(db: db_dependency, form:
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Could not validate user")
-    token = create_access_token(user.username, user.id, timedelta(minutes=15))
+    token = create_access_token(user.username, user.id, user.role, timedelta(minutes=15))
     return {"access_token": token, "token_type": "bearer"}
 

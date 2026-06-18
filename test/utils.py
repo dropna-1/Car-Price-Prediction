@@ -26,7 +26,7 @@ def db():
         db.close()
 
 def override_get_current_user():
-    return {"username": "amir", "id": 1}
+    return {"username": "amir", "id": 1, "role": "admin"}
 
 def delete_table(table_name: str):
     with test_engine.connect() as connection:

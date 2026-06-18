@@ -9,6 +9,7 @@ class User(Base):
     username = Column(String, unique=True)
     balance = Column(Integer, default=0)
     hashed_password = Column(String)
+    role = Column(String, default="user")
 
 
 class Car(Base):

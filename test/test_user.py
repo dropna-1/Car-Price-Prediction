@@ -1,6 +1,6 @@
 from test.utils import *
 from app.main import app
-from app.router.users import get_db, get_current_user
+from app.router.user import get_db, get_current_user
 from fastapi.testclient import TestClient
 
 @pytest.fixture
